@@ -1,0 +1,587 @@
+.wrapper1 {
+    width: 75%;
+    height: 6.75%;
+    position: absolute;
+    top: 1%;
+    left: 12.5%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+.wrapper1b {
+    width: 80%;
+    height: 10%;
+    position: absolute;
+    top: 8.75%;
+    left: 10%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper5b { /*  LAT */
+    width: 12%;
+    height: 11.5%;
+    position: absolute;
+
+    top: 20%;
+    left: 45%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper5c { /*  LONG */
+    width: 12%;
+    height: 11.5%;
+    position: absolute;
+
+    top: 25.5%;
+    left: 65.85%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper6a {   /* gyro threshold box */
+    width: 10%;
+    height: 11.5%;
+    position: absolute;
+    top: 20%;
+    left:3%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper6b {   /* accelo threshold box  */
+    width: 10%;
+    height: 11.5%;
+    position: absolute;
+    top: 20%;
+    left:14%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+
+.wrapper2 { /* Gyro status*/
+    width: 18%;
+    height: 11.5%;
+    position: absolute;
+    top: 20%;
+    left: 25%;
+    box-shadow: 0px 10px 50px rgba(192,0,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper2b { /* Accel/direction status*/
+  width: 18%;
+  height: 11.5%;
+  position: absolute;
+  top: 20%;
+  left: 43.5%;
+  box-shadow: 0px 10px 50px rgba(192,0,192, 0.3);
+  overflow: hidden;
+}
+.wrapper5a { /* UUID */
+    width: 10%;
+    height: 11.5%;
+    position: absolute;
+    top: 20%;
+    left: 62%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper5 { /*  callibration status */
+    width: 24.4%;
+    height: 11.5%;
+    position: absolute;
+
+    top: 20%;
+    left: 73%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper3 {  /* Gyro Graph */
+    width: 45%;
+    height: 40%;
+    position: absolute;
+    top: 33%;
+    left: 3%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+}
+
+.wrapper3b {  /* Accel Graph */
+    width: 45%;
+    height: 40%;
+    position: absolute;
+    top: 33%;
+    left: 52%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+}
+
+/*.wrapper6c {
+    width: 13%;
+    height: 13%;
+    position: absolute;
+    top: 75%;
+    left: 3%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper6lat {
+    width: 13%;
+    height: 13%;
+    position: absolute;
+    top: 75%;
+    left: 17%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+.wrapper6lon {
+    width: 13%;
+    height: 13%;
+    position: absolute;
+    top: 75%;
+    left: 31%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}*/
+
+.wrapper5d { /*  DIST */
+    width: 18%;
+    height: 13%;
+    position: absolute;
+    top: 75%;
+    left: 55%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: hidden;
+}
+
+
+.wrapper2c { /* range status*/
+  width: 18%;
+  height: 13.0%;
+  position: absolute;
+  top: 75%;
+  left:75%;
+  box-shadow: 0px 10px 50px rgba(192,0,192, 0.3);
+  overflow: hidden;
+}
+
+.wrapper9a { /* range status*/
+  width: 18%;
+  height: 13.0%;
+  position: absolute;
+  top: 75%;
+  left:15%;
+  box-shadow: 0px 10px 50px rgba(192,0,192, 0.3);
+  overflow: hidden;
+}
+
+.wrapper9b { /* range status*/
+  width: 18%;
+  height: 13.0%;
+  position: absolute;
+  top: 75%;
+  left:45%;
+  box-shadow: 0px 10px 50px rgba(192,0,192, 0.3);
+  overflow: hidden;
+}
+
+.wrapper9c { /* range status*/
+  width: 18%;
+  height: 13.0%;
+  position: absolute;
+  top: 75%;
+  left:75%;
+  box-shadow: 0px 10px 50px rgba(192,0,192, 0.3);
+  overflow: hidden;
+}
+
+.wrapper8 { /* table  */
+    width: 90%;
+    height: 13.0%;
+    position: absolute;
+    top: 90%;
+    left:4%;
+    box-shadow: 0px 10px 50px rgba(192,192,192, 0.3);
+    overflow: scroll;
+}
+
+
+body {
+    background-color: rgb(0, 0, 0);/*linear-gradient(, rgba(0, 0, 0, 1)), url(back.jpg);*/
+    font-family: Lato;
+    font-weight: 300;
+    color: #555;
+}
+
+.xGyro-panel{
+    position: absolute;
+    left:5%;
+    top:5%;
+    width: 10%;
+    height: 80.0%;
+    /*box-shadow: 0px 10px 50px rgba(255,255,255, 0.3);*/
+    color: #fff;
+    /*background-color: #1c7a96;
+    align:center;*/
+}
+.yGyro-panel{
+  position: absolute;
+  left:20%;
+  top:5%;
+  width: 10%;
+  height: 80.0%;
+  /*box-shadow: 0px 10px 50px rgba(255,255,255, 0.3);*/
+  color: #fff;
+}
+
+.zGyro-panel{
+  position: absolute;
+  left:35%;
+  top:5%;
+  width: 10%;
+  height: 80.0%;
+  /*box-shadow: 0px 10px 50px rgba(255,255,255, 0.3);*/
+  color: #fff;
+}
+.xAccel-panel{
+  position: absolute;
+  left:90%;
+  top:5%;
+  width: 10%;
+  height: 80.0%;
+  /*box-shadow: 0px 10px 50px rgba(255,255,255, 0.3);*/
+  color: #fff;
+}
+.yAccel-panel{
+  position: absolute;
+  left:75%;
+  top:5%;
+  width: 10%;
+  height: 80.0%;
+  /*box-shadow: 0px 10px 50px rgba(255,255,255, 0.3);*/
+  color: #fff;
+}
+.zAccel-panel{
+  position: absolute;
+  left:60%;
+  top:5%;
+  width: 10%;
+  height: 80.0%;
+  /*box-shadow: 0px 10px 50px rgba(255,255,255, 0.3);*/
+  color: #fff;
+}
+
+.initial-data {
+    top:10%;
+    font-size: 150%;
+    width:60%;
+    background-color: #1c7a96;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    position: absolute;
+}
+
+.initial-data-value {
+    color: #fff;
+    text-align: center;
+    font-size: 130%;
+    font-weight: 70;
+    top:70%;
+    position: absolute;
+}
+
+.title {
+  background-color: #1c7a96;
+  color: #fff;
+  width: 85%;
+  margin: 0 auto;
+  padding: 0.75%;
+  text-align: center;
+  font-size: 200%;
+}
+.vib-box {
+  text-align: center;
+  background-color: #1c7a96;
+  color: #fff;
+  width: 60%;
+  margin: 0 auto;
+  padding: 12px;
+  font-size: 155%;
+}
+.vib-boxB {
+    text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 140%;
+}
+.vib-boxC {
+    text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+.vibStat {
+  position: absolute;
+  left: 30%;
+  top: 56%;
+  height: 6.0%;
+  font-size: 120%;
+}
+.vibStatB {
+  position: absolute;
+  top: 56%;
+  height: 6%;
+  text-align: center;
+  left: 30%;
+}
+.vibStatC {
+  position: absolute;
+  left: 30%;
+  top: 56%;
+  height: 6.0%;
+  font-size: 120%;
+}
+
+.offset-limit-main {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 55%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+
+.offset-limit-maina {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+
+.offset-limit-mainb {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 55%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+
+.offset-limit-mainc {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 50%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+
+.offset-limit-maind {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 50%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+
+.offset-limit {
+  position: absolute;
+  left: 28%;
+  top: 60%;
+  height: 6.0%;
+  font-size: 120%;
+}
+
+.offset-limita {
+  position: absolute;
+  left: 35%;
+  top: 60%;
+  height: 6.0%;
+  font-size: 120%;
+}
+
+.offset-limitb {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  height: 6.0%;
+  font-size: 120%;
+}
+
+.offset-limitc {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  height: 6.0%;
+  font-size: 120%;
+}
+
+.offset-limitd {
+  position: absolute;
+  left: 22%;
+  top: 60%;
+  height: 6.0%;
+  font-size: 120%;
+}
+
+.set-threshold-limit {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+
+.set-threshold-limitB {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%
+}
+
+.set-threshold-limitC {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%
+}
+
+.set-threshold-limitlat {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 80%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%
+}
+
+.set-threshold-limitlon {
+  text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 80%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%
+}
+
+.set-threshold-limit-input {
+  position: absolute;
+  left: 10%;
+  top: 65%;
+  height: 10%;
+  width: 25%;
+}
+
+.set-threshold-limit-inputB {
+  position: absolute;
+  left: 10%;
+  top: 65%;
+  height: 10%;
+  width: 25%;
+}
+
+.set-threshold-limit-inputC {
+  position: absolute;
+  left: 10%;
+  top: 65%;
+  height: 10%;
+  width: 25%;
+}
+
+.set-threshold-limit-inputlat {
+  position: absolute;
+  left: 10%;
+  top: 65%;
+  height: 10%;
+  width: 40%;
+}
+
+.set-threshold-limit-inputlon {
+  position: absolute;
+  left: 10%;
+  top: 65%;
+  height: 10%;
+  width: 40%;
+}
+
+
+.startlat {
+    text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+.startlon {
+    text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+.startfuel {
+    text-align: center;
+    background-color: #1c7a96;
+    color: #fff;
+    width: 60%;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 155%;
+}
+
+.startlatid {
+  position: absolute;
+  left: 30%;
+  top: 56%;
+  height: 6.0%;
+  font-size: 120%;
+}
+
+.startlonid {
+  position: absolute;
+  left: 30%;
+  top: 56%;
+  height: 6.0%;
+  font-size: 120%;
+}
+
+.startfuelid {
+  position: absolute;
+  left: 30%;
+  top: 56%;
+  height: 6.0%;
+  font-size: 120%;
+}

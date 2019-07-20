@@ -1,0 +1,740 @@
+<html>
+   <head>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js" type="text/javascript"></script>
+     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" />-->
+     <link type="text/css" rel="stylesheet" href="design2 - v22.css">
+     <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+
+    <title>Real Time Interface</title>
+
+   <script type = "text/javascript" language = "javascript">
+   var deviceList = [];
+   var timeDeviceList = [];
+   //var thresholdLimit = parseFloat(prompt('Enter a threshold value : '));
+
+   //var threshoLimit = prompt('Enter a threshold value : ');
+   var thresholdLimit = 0.5;
+   var thresholdLimitB = 500;
+
+   var timeTracker = new Array();
+   var StartTime=-1,StopTime=-1,LatStart=-1,LonStart=-1,LatEnd=-1,LonStart=-1,totalJourneyDuration=-1,firstEntry=-1, firstEntry2=-1;
+   var LAT=-1, LON=-1, SN = 1;
+   var lastValidLat=-1;
+   var lastValidLon=-1;
+
+   /*
+   timeTracker Details :
+   Index     Denotes                                           Initialised-With
+   0         Total Duration of work time within a session       0
+   1         state of started/stopped/new                      -1
+   2         prev start time                                   -1
+   3         prev end time                                     -1
+   4         Session Number for particular sensor/device       -1
+   5         RSSI VALUE                                         1 //denoting OUTOFRANGE
+   */
+   var devicesHistory = new Array();
+
+   /*
+   devicesHistory Details :
+   Index     Denotes                                           Initialised-With
+   0         Last Session Number                                1
+   1         Last Work Duration                                -1
+   2         Total Work Time of Device                         -1
+   3         Last INRANGE or OUTOFRANGE                        -1
+   */
+   //document.querySelector('#tLimitID').textContent = thresholdLimit;
+   //console.log(typeof(threshoLimit));
+
+   var topics = "outsinhala12345";
+   var topicFlag=-1;
+   var mqtt,mqtt1,mqtt2;
+   var connected_flag=0;
+   var reconnectTimeout = 2000;
+   var host="iot.eclipse.org";
+   var port=1883;
+
+    var prevX = 0;
+    var prevY = 0;
+    var prevZ = 0;
+    var prevaX = 0;
+    var prevaY = 0;
+    var prevaZ = 0;
+
+    var initialListX = [];
+    var initialListY = [];
+    var initialListZ = [];
+
+    var initialCounter = 0;
+    var totCounter = 0;
+
+    var offX = 0;
+    var offY = 0;
+    var offZ = 0;
+
+
+    var InitialStatus = false;
+    var calStatus = false;
+    //OR ......
+		//var host="broker.hivemq.com";
+		//var port=8000;
+
+    var sqlStringMessage = "";
+    function toHumanDate(epochValue){
+      var date = new Date(epochValue);
+      console.log(date);
+      var s = String(date.getDate()) + "/" + String(date.getMonth() + 1) + "/" + String(date.getFullYear()) + " " + String(date.getHours()) + ":" + String(date.getMinutes()) + ":" + String(date.getSeconds());
+      return s;
+    }
+
+    //appending of record as a whole after one session
+    function insRow(UUID,SN) {
+      console.log('inserted in to a table 1');
+      var x = document.getElementById('POITable');
+      var new_row = x.rows[1].cloneNode(true);
+      var len = x.rows.length-1;
+      new_row.cells[0].innerHTML = len;
+
+      new_row.cells[1].innerHTML = UUID;
+      new_row.cells[2].innerHTML = SN;
+
+      new_row.cells[3].innerHTML = toHumanDate(StartTime*1000);
+      new_row.cells[4].innerHTML = toHumanDate(StopTime*1000);
+
+      new_row.cells[5].innerHTML = LatStart;
+      //console.log(SIT);
+      new_row.cells[6].innerHTML = LonStart;
+      new_row.cells[7].innerHTML = LatEnd;
+      new_row.cells[8].innerHTML = LonStart;
+      new_row.cells[9].innerHTML = totalJourneyDuration;
+      x.appendChild(new_row);
+
+      sqlStringMessage = String(new_row.cells[0].innerHTML) + "#" + String(new_row.cells[1].innerHTML) + "#" + String(new_row.cells[2].innerHTML) + "#" + String(new_row.cells[3].innerHTML) + "#" + String(new_row.cells[4].innerHTML) + "#" + String(new_row.cells[5].innerHTML)+ "#" + String(new_row.cells[6].innerHTML)+ "#" + String(new_row.cells[7].innerHTML)+ "#" + String(new_row.cells[8].innerHTML)+ "#" + String(new_row.cells[9].innerHTML);
+
+      //
+       //MQTTconnect();
+       message = new Paho.MQTT.Message(sqlStringMessage);
+       message.destinationName = "instaiscool12345";
+       mqtt.send(message);
+       return;
+    }
+
+    function rangeTimeExitTimeUpdt(ST,ET,inrangeTime,row){
+      console.log('inserted in to a table 3');
+      var x = document.getElementById('POITable');
+      var new_row = x.rows[row];
+      //new_row.cells[6].innerHTML = SIT;
+      new_row.cells[8].innerHTML = inrangeTime;
+      //x.appendChild(new_row);
+      return;
+    }
+
+    function onConnect() {
+    // Once a connection has been made, make a subscription and send a message.
+
+    console.log("Connected to SQL DATABASE TOPIC");
+    //mqtt.subscribe("sensor1");
+    //message = new Paho.MQTT.Message(sqlStringMessage);
+    //message.destinationName = "instaiscool12345";
+    //mqtt.send(message);
+    }
+    		function onFailure(message) {
+    			console.log("Connection Attempt to Host "+host+"Failed");
+    			setTimeout(MQTTconnect, reconnectTimeout);
+            }
+    		function onMessageArrived(msg){
+    			var out_msg="Message received "+msg.payloadString+"<br>";
+    			//out_msg=out_msg+"Message received Topic "+msg.destinationName;
+    			console.log(out_msg);
+    		    }
+
+    	 	/*function onConnect() {
+    	  // Once a connection has been made, make a subscription and send a message.
+
+    		console.log("Connected to SQL DATABASE TOPIC");
+    		//mqtt.subscribe("sensor1");
+    		message = new Paho.MQTT.Message("Hello World");
+    		message.destinationName = "instaiscool12345";
+    		mqtt.send(message);
+      }*/
+   	  function MQTTconnect() {
+   		console.log("connecting to "+ host +" "+ port);
+   		mqtt = new Paho.MQTT.Client("iot.eclipse.org", Number(80), "/ws", "clientId0");
+   		//document.write("connecting to "+ host);
+   		var options = {
+   			timeout: 3,
+   			onSuccess: onConnect,
+   			onFailure: onFailure
+      };
+   		//mqtt.onMessageArrived = onMessageArrived
+   		mqtt.connect(options); //connect
+      //mqtt.connect();
+      return ;
+   		}
+      //function to calculate the distance
+      function distance(lat1, lon1, lat2, lon2, unit) {
+      	var radlat1 = Math.PI * lat1/180
+      	var radlat2 = Math.PI * lat2/180
+      	var theta = lon1-lon2
+      	var radtheta = Math.PI * theta/180
+      	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+      	if (dist > 1) {
+      		dist = 1;
+      	}
+      	dist = Math.acos(dist)
+      	dist = dist * 180/Math.PI
+      	dist = dist * 60 * 1.1515
+      	if (unit=="K") { dist = dist * 1.609344 }
+      	if (unit=="N") { dist = dist * 0.8684 }
+      	return dist
+      }
+
+	 	function onConnect1() {
+  	  // Once a connection has been made, make a subscription and send a message.
+  		console.log("Connected to sensor 1");
+      mqtt1.subscribe("outsinhala12345");
+      mqtt1.onMessageArrived = function (message){
+        var epochDate = Math.floor(Date.now() / 1000);
+      var msg=message.payloadString;
+      console.log(msg);
+            //topicFlag=1;
+            //topics="gadhala12345";
+            totCounter++;
+            //var msg=message.payloadString;
+            //console.log(topics);
+            //console.log("Time Elapsed : "+(currTime-startTime).toString()+"s Live Feed: " + totCounter + " " + msg);
+            //console.log("tdata is : "+document.getElementById("tData").value);
+
+            if(msg=="hello from ESP8266"){
+              //continue; do nothing
+              calStatus = false;
+              //console.log('This line???');
+              initialCounter=0;
+            }
+            else{
+              thresholdLimit = document.getElementById("tDataA").value;
+              thresholdLimitB = document.getElementById("tDataB").value;
+              var tempData=message.payloadString.split(',');
+              var xGyro=parseFloat(tempData[0].split(':')[1]);
+              var yGyro=parseFloat(tempData[1].split(':')[1]);
+              var zGyro=parseFloat(tempData[2].split(':')[1]);
+              document.querySelector('#xID').textContent = xGyro.toFixed(4) - offX;
+              document.querySelector('#yID').textContent = yGyro.toFixed(4) - offY;
+              document.querySelector('#zID').textContent = zGyro.toFixed(4) - offZ;
+
+              //accelo part
+              var xAccel=parseFloat(tempData[3].split(':')[1]);
+              xAccel = xAccel.toFixed(4);
+              var yAccel=parseFloat(tempData[4].split(':')[1]);
+              yAccel = yAccel.toFixed(4);
+              var zAccel=parseFloat(tempData[5].split(':')[1]);
+              zAccel = zAccel.toFixed(4);
+              document.querySelector('#axID').textContent = xAccel;
+              document.querySelector('#ayID').textContent = yAccel;
+              document.querySelector('#azID').textContent = zAccel;
+
+                  //document.querySelector('#tLimitID').textContent = thresholdLimit+" units";
+
+                  var activityMonitor = -1;
+                  initialCounter++;
+                  if(initialCounter<=50){
+                    initialListX.push(xGyro);
+                    initialListY.push(yGyro);
+                    initialListZ.push(zGyro);
+                    //console.log(initialListX);
+
+                    prevaX = xAccel;
+                    prevaY = yAccel;
+                    prevaZ = zAccel;
+                  }
+                  else if(InitialStatus==false){
+                    calStatus = true;
+                    InitialStatus = true;
+                    prevX = xGyro;
+                    prevY = yGyro;
+                    prevZ = zGyro;
+
+                    prevaX = xAccel;
+                    prevaY = yAccel;
+                    prevaZ = zAccel;
+                    //offX=sum(initialListX)/100;
+                    //offY=sum(initialListY)/100;
+                    //offZ=sum(initialListZ)/100;
+
+                    offX = initialListX.reduce((a, b) => a + b, 0)/100;
+                    offY = initialListY.reduce((a, b) => a + b, 0)/100;
+                    offZ = initialListZ.reduce((a, b) => a + b, 0)/100;
+                  }
+                  else{
+                    if(Math.abs(prevX-xGyro)>=thresholdLimit||Math.abs(prevY-yGyro)>=thresholdLimit||Math.abs(prevZ-zGyro)>=thresholdLimit){
+                      document.querySelector('#vibID').textContent = "Started !!!";
+                      activityMonitor = 1;
+                    }
+                    else{
+                      document.querySelector('#vibID').textContent = "Stopped !!!";
+                    }
+
+                    var acceloStat = "";
+                    if(Math.abs(prevaX-xAccel)>=thresholdLimitB){
+                      //document.querySelector('#vibIDB').textContent = "Displacement in X/Y/Z !!!";
+                      acceloStat += "X-Yes ";
+                      activityMonitor = 1;
+                    }
+                    else{
+                      //document.querySelector('#vibIDB').textContent = "No  Displacement !!!";
+                      acceloStat += "X-No ";
+                    }
+                    if(Math.abs(prevaY-yAccel)>=thresholdLimitB){
+                      //document.querySelector('#vibIDB').textContent = "Displacement in X/Y/Z !!!";
+                      acceloStat += "Y-Yes ";
+                      activityMonitor = 1;
+                    }
+                    else{
+                      //document.querySelector('#vibIDB').textContent = "No  Displacement !!!";
+                      acceloStat += "Y-No ";
+                    }
+                    if(Math.abs(prevaZ-zAccel)>=thresholdLimitB){
+                      //document.querySelector('#vibIDB').textContent = "Displacement in X/Y/Z !!!";
+                      acceloStat += "Z-Yes ";
+                      activityMonitor = 1;
+                    }
+                    else{
+                      //document.querySelector('#vibIDB').textContent = "No  Displacement !!!";
+                      acceloStat += "Z-No ";
+                    }
+                    document.querySelector('#vibIDB').textContent = acceloStat;
+                    prevX = xGyro;
+                    prevY = yGyro;
+                    prevZ = zGyro;
+
+                    prevaX = xAccel;
+                    prevaY = yAccel;
+                    prevaZ = zAccel;
+                    calStatus = true;
+                  }
+
+              if(calStatus === true){
+                        var UUID = parseFloat(tempData[6]);
+                        document.querySelector('#oLimitID').textContent = "Callibrated !!!";
+                        if(activityMonitor==1){
+                          if(firstEntry==-1){
+                          StartTime = epochDate;
+                          firstEntry = 1;
+                          LatStart = LAT;
+                          LonStart = LON;
+                          }
+                          else if(LatStart==-1 && LonStart==-1 && LAT!=-1 && LON!=-1){
+                            LatStart = LAT;
+                            LonStart = LON;
+                          }
+                          console.log('active');
+                        }
+                        else{ // now stopped
+                          //already initialised
+                          if(firstEntry==1){
+                          firstEntry = -1;
+                          StopTime = epochDate;
+                          LatEnd = lastValidLat;
+                          LonEnd = lastValidLon;
+                          totalJourneyDuration = StopTime - StartTime;
+                          insRow(UUID,SN);
+                          SN+=1;
+                          }
+                          console.log('notactive');
+
+                        }
+                  }
+                  else{
+                    document.querySelector('#oLimitID').textContent = (50-initialCounter) + " records !!!!";
+                }
+
+            }  //take out this multi line comment da!!!!!
+  }
+  console.log('no data from sensor 1');
+  //console.log(epochDate);
+  //onConnect();
+}
+
+//sensor 2 code of onConnect
+
+function onConnect2() {
+  // Once a connection has been made, make a subscription and send a message.
+console.log("Connected to sensor 2");
+mqtt2.subscribe("gadhala12345");
+mqtt2.onMessageArrived = function(message){
+  var epochDate = Math.floor(Date.now() / 1000);
+    //BLE PROXIMITY SCANNING PART
+    //topicFlag=-1;
+      //topics = "outsinhala12345";
+
+      //console.log(topics);
+
+      var msg=message.payloadString;
+      console.log(msg);
+      if(msg=="hello from NODEMCU"){
+      //here you do nothing
+      }
+      else {
+      var msssssg = msg.split(":");
+      console.log(msssssg);
+
+      var UUID = parseFloat(msssssg[0]);
+      LAT = parseFloat(msssssg[1]);
+      LONG = parseFloat(msssssg[2]);
+      if(LAT!=-1 && LON!=-1){
+        lastValidLat=LAT;
+        lastValidLon=LON;
+      }
+      document.querySelector('#startlatid').textContent=LAT;
+      document.querySelector('#startlonid').textContent=LON;
+  }
+}
+console.log('no data from sensor 2');
+//console.log(epochDate);
+//onConnect();
+}
+
+
+function onConnect3() {
+  // Once a connection has been made, make a subscription and send a message.
+console.log("Connected to sensor 3");
+mqtt3.subscribe("stfu12345");
+mqtt3.onMessageArrived = function(message){
+
+    var epochDate = Math.floor(Date.now() / 1000);
+      //BLE PROXIMITY SCANNING PART
+      //topicFlag=-1;
+        //topics = "outsinhala12345";
+
+        //console.log(topics);
+        console.log("Measuring the fuel capacity !!!");
+        var msg=message.payloadString;
+        console.log(msg);
+        if(msg=="hello from NODEMCU"){
+        //here you do nothing
+
+        }
+        else{
+          console.log("Measuring the fuel capacity !!!");
+          document.querySelector('#startfuelid').textContent = msg.split(":")[1];
+        }
+}
+
+console.log('no data from sensor 3');
+//console.log(epochDate);
+//onConnect();
+}
+
+
+      function onConnectionLost1(message){
+      console.log("connection lost 1 "+message.errorMessage);
+      //document.getElementById("status").innerHTML = "Connection Lost";
+      //document.getElementById("status_messages").innerHTML ="Connection Lost";
+      connected_flag=0;
+      MQTTconnect1(); //connect
+      }
+      function onFailure1(message) {
+        console.log("Failed 1");
+        console.log(message.errorMessage);
+        //document.getElementById("status_messages").innerHTML = "Connection Failed- Retrying";
+        setTimeout(MQTTconnect1, reconnectTimeout);
+      }
+      function onConnected1(recon,url){
+      console.log(" in onConnected " +reconn);
+      }
+
+      function onConnectionLost2(message){
+      console.log("connection lost 2 "+message.errorMessage);
+      //document.getElementById("status").innerHTML = "Connection Lost";
+      //document.getElementById("status_messages").innerHTML ="Connection Lost";
+      connected_flag=0;
+      MQTTconnect2(); //connect
+      }
+      function onFailure2(message) {
+        console.log("Failed 2");
+        console.log(message.errorMessage);
+        //document.getElementById("status_messages").innerHTML = "Connection Failed- Retrying";
+        setTimeout(MQTTconnect2, reconnectTimeout);
+      }
+      function onConnected2(recon,url){
+      console.log(" in onConnected " +reconn);
+      }
+      //------ 3 ----------
+
+      function onConnectionLost3(message){
+      console.log("connection lost 3 "+message.errorMessage);
+      //document.getElementById("status").innerHTML = "Connection Lost";
+      //document.getElementById("status_messages").innerHTML ="Connection Lost";
+      connected_flag=0;
+      MQTTconnect3(); //connect
+      }
+      function onFailure3(message) {
+        console.log("Failed 3");
+        console.log(message.errorMessage);
+        //document.getElementById("status_messages").innerHTML = "Connection Failed- Retrying";
+        setTimeout(MQTTconnect3, reconnectTimeout);
+      }
+      function onConnected3(recon,url){
+      console.log(" in onConnected " +reconn);
+      }
+
+	  function MQTTconnect1() {
+		console.log("connecting to "+ host +" "+ port);
+
+
+    mqtt1 = new Paho.MQTT.Client("iot.eclipse.org", Number(80), "/ws", "clientId1");//mpu6050sensor
+
+    //mqtt = new Paho.MQTT.Client("iot.eclipse.org", Number(1883),  "myClientId" + new Date().getTime());
+    /*mqttConnectOptions = new MqttConnectOptions();
+    mqttConnectOptions.setAutomaticReconnect(true);
+
+    mqtt.connect(mqttConnectOptions, null, mqttActionListener());*/
+		//document.write("connecting to "+ host);
+		var options1 = {
+			timeout: 20,
+			onSuccess: onConnect1,
+      onFailure: onFailure1
+		};
+
+
+
+    mqtt1.onConnectionLost = onConnectionLost1;
+    //mqtt.onMessageArrived = onMessageArrived;
+    mqtt1.onConnected = onConnected1;
+		mqtt1.connect(options1); //connect
+    return false;
+		}
+
+    function MQTTconnect2() {
+    console.log("connecting to "+ host +" "+ port);
+
+
+    mqtt2 = new Paho.MQTT.Client("iot.eclipse.org", Number(80), "/ws", "clientId2");//ble
+
+    var options2 = {
+      timeout: 20,
+      onSuccess: onConnect2,
+      //onFailure: onFailure2
+    };
+
+    //mqtt2.onConnectionLost = onConnectionLost2;
+    //mqtt.onMessageArrived = onMessageArrived;
+    mqtt2.onConnected = onConnected2;
+    mqtt2.connect(options2);
+    return false;
+    }
+
+
+    function MQTTconnect3() {
+    console.log("connecting to "+ host +" "+ port);
+
+
+    mqtt3 = new Paho.MQTT.Client("iot.eclipse.org", Number(80), "/ws", "clientId3");//ble
+
+    var options3 = {
+      timeout: 20,
+      onSuccess: onConnect3,
+      //onFailure: onFailure2
+    };
+
+    //mqtt2.onConnectionLost = onConnectionLost2;
+    //mqtt.onMessageArrived = onMessageArrived;
+    mqtt3.onConnected = onConnected3;
+    mqtt3.connect(options3);
+    return false;
+    }
+
+
+	  </script>
+     </head>
+
+     <body>
+
+       <div class="wrapper1 clearfix">
+           <div class="title">AUTOMATED TRACKING OF DELIVERY VEHICLE
+            </div>
+      </div>
+
+       <div class="wrapper1b clearfix">
+             <div class="xGyro-panel">
+                 <div class="initial-data" id="name-1">Yaw</div>
+                    <div class="initial-data-value" id="xID">Initialising..
+                    </div>
+              </div>
+
+              <div class="yGyro-panel">
+                  <div class="initial-data" id="name-1">Pitch
+                  </div>
+                     <div class="initial-data-value" id="yID">Initialising..
+                     </div>
+               </div>
+
+               <div class="zGyro-panel">
+                   <div class="initial-data" id="name-1">Roll
+                   </div>
+                      <div class="initial-data-value" id="zID">Initialising..
+                      </div>
+                </div>
+
+                <!--
+                      Acellometer Values
+                -->
+                <div class="xAccel-panel">
+                    <div class="initial-data" id="name-1">AccX
+                    </div>
+                       <div class="initial-data-value" id="axID">Initialising..
+                       </div>
+                </div>
+
+                 <div class="yAccel-panel">
+                     <div class="initial-data" id="name-1">AccY
+                     </div>
+                        <div class="initial-data-value" id="ayID">Initialising..
+                        </div>
+                </div>
+
+                <div class="zAccel-panel">
+                    <div class="initial-data" id="name-1">AccZ
+                    </div>
+                       <div class="initial-data-value" id="azID">Initialising..
+                       </div>
+                </div>
+        </div>
+      <div class="wrapper2 clearfix">
+      <div class="vib-box">Activity Status
+      <div class="vibStat" id="vibID">NA</div>
+    </div>
+    </div>
+
+    <div class="wrapper2b clearfix">
+    <div class="vib-boxB">Direction
+      <div class="vibStatB" id="vibIDB" >NA</div>
+    </div>
+    </div>
+
+    </div>
+
+    <!-- graph2 fail
+    <div class="wrapper7 clearfix">
+
+    <div id="chartContainer2" >
+
+    </div>
+
+    </div>
+    -->
+    <!--<div class="wrapper4 clearfix">
+          <div class="threshold-limit-main">Threshold Limit
+          <div class="threshold-limit" id="tLimitID">Initialising ...</div>
+      </div>
+      </div>
+    -->
+      <div class="wrapper5 clearfix"><!--callibration offset status-->
+          <div class="offset-limit-main" id"letsTryCalStat">Callibration Status
+          <div class="offset-limit" id="oLimitID">Initialising ...</div>
+      </div>
+      </div>
+
+      <div class="wrapper5a clearfix"><!--UUID-->
+          <div class="offset-limit-maina">ID
+          <div class="offset-limita" id="oLimitIDa">NA</div>
+      </div>
+      </div>
+
+      <!--<div class="wrapper5b clearfix">
+          <div class="offset-limit-mainb">LAT
+          <div class="offset-limitb" id="oLimitIDb">NA</div>
+      </div>
+      </div>
+
+      <div class="wrapper5c clearfix">
+          <div class="offset-limit-mainc">LONG
+          <div class="offset-limitc" id="oLimitIDc">NA</div>
+      </div>
+    </div>-->
+
+      <div class="wrapper6a clearfix"><!--IS IS FOR G SET Threshold-->
+        <div class="set-threshold-limit" id="stLimitIDa">G Th:</div>
+
+        <div class="set-threshold-limit-input" id="stLimitInputID"><input type="text" id="tDataA" name="LastNameA" value="0.5"><br></div>
+      </div>
+
+      <div class="wrapper6b clearfix"><!--IS IS FOR A SET Threshold-->
+        <div class="set-threshold-limitB" id="stLimitIDb">A Th:</div>
+
+        <div class="set-threshold-limit-inputB" id="stLimitInputID"><input type="text" id="tDataB" name="LastNameB" value="1000"><br></div>
+      </div>
+
+      <div class="wrapper3 clearfix"></div>
+      <div id="chartContainer1" class="wrapper3 clearfix">
+      </div>
+
+      <div class="wrapper3b clearfix"></div>
+      <div id="chartContainer2" class="wrapper3b clearfix">
+      </div>
+
+
+      <div class="wrapper9a clearfix">
+      <div class="startlat">Starting Lat
+      <div class="startlatid" id="startlatid">NA</div>
+    </div>
+    </div>
+
+    <div class="wrapper9b clearfix">
+    <div class="startlon">Starting Lon
+    <div class="startlonid" id="startlonid">NA</div>
+    </div>
+    </div>
+
+    <div class="wrapper9c clearfix">
+    <div class="startfuel">Fuel
+    <div class="startfuelid" id="startfuelid">NA</div>
+    </div>
+    </div>
+
+
+      <!-- Table of records having various sessions and sensors-UUID's-->
+      <div class="wrapper8 clearfix">
+      <div id="POItablediv" class="innerTable">
+        <table id="POITable" border="1">
+          <tr>
+            <td width="8%"><font color="#fff" size="6">S.No.</td>
+            <td width="8%"><font color="#fff"size="6">UUID</td>
+            <td width="8%"><font color="#fff" size="6">Interval</td>
+            <td width="8%"><font color="#fff"size="6">Start Time</td>
+            <td width="8%"><font color="#fff"size="6">Stop Time</td>
+            <td width="8%"><font color="#fff"size="6">Lat-Sart</td>
+            <td width="10%"><font color="#fff"size="6">Lon-Start</td>
+            <td width="8%"><font color="#fff"size="6">Lat-End</td>
+            <td width="9%"><font color="#fff"size="6">Lon-End</td>
+            <td width="8%"><font color="#fff"size="6">Total Journey Duration</td>
+          </tr>
+          <tr>
+            <td><font color="#fff">0</td>
+            <td><font color="#fff"><input size=10 type="text" id="lngbox" readonly=true/ value="NIL"></font></td>
+            <td><font color="#fff"><input size=15 type="text" id="lngbox" readonly=true/ value="NIL"></td>
+            <td><font color="#fff"><input size=15 type="text" id="lngbox" readonly=true/ value="NIL"></td>
+            <td><font color="#fff"><input size=15 type="text" id="lngbox" readonly=true/ value="NIL"></td>
+            <td><font color="#fff"><input size=11 type="text" id="lngbox" readonly=true/ value="NIL"></td>
+            <td><font color="#fff"><input size=11 type="text" id="lngbox" readonly=true/ value="NIL"></td>
+            <td><font color="#fff"><input size=12 type="text" id="lngbox" readonly=true/ value="NIL"></td>
+            <td><font color="#fff"><input size=12 type="text" id="lngbox" readonly=true/ value="NIL"></td>
+            <td><font color="#fff"><input size=27 type="text" id="lngbox" readonly=true/ value="NIL"></td>
+          </tr>
+        </table>
+        <br>
+        <br>
+      </div>
+
+    </div>
+  	<script>
+
+     	MQTTconnect1();
+     	MQTTconnect2();
+     	MQTTconnect3();
+      MQTTconnect();
+     	</script>
+      <script src="finalGyroAccel.js"></script>
+      <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+      </body>
+</html>
+
